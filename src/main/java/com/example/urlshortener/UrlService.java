@@ -10,14 +10,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UrlService {
 
-    // 인메모리
-    // Key: 단축코드(shortId), Value: 원본URL(originalUrl)
-    // private final Map<String, String> urlMap = new ConcurrentHashMap<>();
-
     private final UrlRepository urlRepository;
 
-
-    // 2. 단축 URL 생성 로직
+    // 단축 URL 생성 로직
     public String shortenUrl(String originalUrl) {
 
         // 간단하게 UUID의 앞 8자리만 잘라서 사용 (중복 체크 로직은 생략)
@@ -33,7 +28,7 @@ public class UrlService {
         return shortId;
     }
 
-    // 3. 원본 URL 조회 로직
+    // 원본 URL 조회 로직
     @Transactional
     public String getOriginalUrl(String shortId) {
         UrlEntity urlEntity = urlRepository.findByShortId(shortId);
