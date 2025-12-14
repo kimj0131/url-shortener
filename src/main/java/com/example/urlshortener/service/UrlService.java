@@ -1,5 +1,7 @@
-package com.example.urlshortener;
+package com.example.urlshortener.service;
 
+import com.example.urlshortener.entity.UrlEntity;
+import com.example.urlshortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

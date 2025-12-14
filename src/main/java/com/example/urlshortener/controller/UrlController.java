@@ -1,5 +1,6 @@
-package com.example.urlshortener;
+package com.example.urlshortener.controller;
 
+import com.example.urlshortener.service.UrlService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.URL;
