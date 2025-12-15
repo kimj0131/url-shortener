@@ -28,4 +28,8 @@ public class UrlEntity {
         this.shortId = shortId;
         this.originalUrl = originalUrl;
     }
+
+    public void increaseVisitCount(){
+        this.visitCount++;
+    }
 }

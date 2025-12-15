@@ -14,6 +14,11 @@ Java Spring Boot 기반의 URL 단축 서비스 프로젝트입니다.
 - Database: MySQL (로컬 개발 환경에서는 H2 사용)
 - Build Tool: Gradle
 
+## Development Environment
+- **IDE**: IntelliJ IDEA
+- **Version Control**: Git
+- **AI Assistant**: Google Gemini (Code Review & Refactoring)
+
 ## Project Roadmap
 
 시스템을 점진적으로 개발하여 안정성과 속도를 향상시킬 계획입니다.

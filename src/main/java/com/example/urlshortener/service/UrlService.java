@@ -2,6 +2,7 @@ package com.example.urlshortener.service;
 
 import com.example.urlshortener.entity.UrlEntity;
 import com.example.urlshortener.repository.UrlRepository;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,15 +34,12 @@ public class UrlService {
     // 원본 URL 조회 로직
     @Transactional
     public String getOriginalUrl(String shortId) {
-        UrlEntity urlEntity = urlRepository.findByShortId(shortId);
+        UrlEntity urlEntity = urlRepository.findByShortId(shortId)
+                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 URL입니다."));
 
         // 방문 카운트 증가
-        Long visitCount = urlEntity.getVisitCount();
-        urlEntity.setVisitCount(++visitCount);
+        urlEntity.increaseVisitCount();
 
-        if(urlEntity == null){
-            return null;
-        }
         return urlEntity.getOriginalUrl();
     }
 }
