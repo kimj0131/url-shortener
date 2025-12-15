@@ -1,8 +1,8 @@
 package com.example.urlshortener.service;
 
 import com.example.urlshortener.entity.UrlEntity;
+import com.example.urlshortener.exception.UrlNotFoundException;
 import com.example.urlshortener.repository.UrlRepository;
-import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,14 +15,14 @@ public class UrlService {
 
     private final UrlRepository urlRepository;
 
-    // 단축 URL 생성 로직
+    @Transactional
     public String shortenUrl(String originalUrl) {
+        String shortId;
+        do {
+            shortId = UUID.randomUUID().toString().substring(0, 8);
+        } while (urlRepository.findByShortId(shortId).isPresent());
 
-        // 간단하게 UUID의 앞 8자리만 잘라서 사용 (중복 체크 로직은 생략)
-        String shortId = UUID.randomUUID().toString().substring(0, 8);
-
-        // http 프로토콜이 없으면 붙여줌 (리다이렉트 시 필요)
-        if(!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")){
+        if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
             originalUrl = "https://" + originalUrl;
         }
 
@@ -31,15 +31,16 @@ public class UrlService {
         return shortId;
     }
 
-    // 원본 URL 조회 로직
     @Transactional
     public String getOriginalUrl(String shortId) {
         UrlEntity urlEntity = urlRepository.findByShortId(shortId)
-                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 URL입니다."));
+                .orElseThrow(() -> new UrlNotFoundException("존재하지 않는 URL입니다."));
 
-        // 방문 카운트 증가
-        urlEntity.increaseVisitCount();
-
+        increaseVisitCount(urlEntity);
         return urlEntity.getOriginalUrl();
+    }
+
+    private void increaseVisitCount(UrlEntity urlEntity) {
+        urlEntity.increaseVisitCount();
     }
 }

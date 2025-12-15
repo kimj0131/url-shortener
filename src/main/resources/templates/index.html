@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener</title>
+</head>
+<body>
+    <form th:action="@{/shorten}" method="post">
+        <input type="text" name="originalUrl" placeholder="URL 입력">
+        <button type="submit">단축하기</button>
+    </form>
+
+    <div th:if="${shortUrl != null}" class="result">
+        <h3>결과:</h3>
+
+        <a th:href="${shortUrl}" target="_blank" th:text="${shortUrl}"></a>
+    </div>
+
+</body>
+</html>

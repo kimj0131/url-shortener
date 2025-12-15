@@ -1,13 +1,13 @@
 package com.example.urlshortener.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UrlEntity {
 
     @Id
@@ -20,7 +20,6 @@ public class UrlEntity {
     @Column(nullable = false, length = 1000)
     private String originalUrl;
 
-    @Setter
     @Column(nullable = false)
     private Long visitCount = 0L;
 
@@ -29,7 +28,7 @@ public class UrlEntity {
         this.originalUrl = originalUrl;
     }
 
-    public void increaseVisitCount(){
+    public void increaseVisitCount() {
         this.visitCount++;
     }
 }

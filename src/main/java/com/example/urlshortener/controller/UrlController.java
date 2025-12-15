@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @RestController
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Validated
 public class UrlController {
@@ -21,7 +22,7 @@ public class UrlController {
 
     // API 1: 단축 URL 생성
     // 예시: POST /api/shorten?url=https://www.google.com
-    @PostMapping("/api/shorten")
+    @PostMapping("/shorten")
     public ResponseEntity<String> shorten(@RequestParam @NotBlank @URL String url){
 
         String shortId = urlService.shortenUrl(url);
