@@ -1,5 +1,6 @@
 package com.example.urlshortener.controller;
 
+import com.example.urlshortener.common.ApiResponse;
 import com.example.urlshortener.service.UrlService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,12 @@ public class UrlController {
     // API 1: 단축 URL 생성
     // 예시: POST /api/shorten?url=https://www.google.com
     @PostMapping("/shorten")
-    public ResponseEntity<String> shorten(@RequestParam @NotBlank @URL String url){
+    public ResponseEntity<ApiResponse<String>> shorten(@RequestParam @NotBlank @URL String url){
 
         String shortId = urlService.shortenUrl(url);
 
         // 실제 서비스라면 도메인을 붙여서 리턴 (예: http://localhost:8080/abc12345)
-        return ResponseEntity.ok(shortId);
+        return ResponseEntity.ok(ApiResponse.success(shortId));
     }
 
     // API 2: 리다이렉트
