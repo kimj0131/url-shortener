@@ -40,6 +40,12 @@ public class UrlService {
         return urlEntity.getOriginalUrl();
     }
 
+    @Transactional(readOnly = true)
+    public UrlEntity findUrlByShortId(String shortId) {
+        return urlRepository.findByShortId(shortId)
+                .orElseThrow(() -> new UrlNotFoundException("존재하지 않는 URL입니다."));
+    }
+
     private void increaseVisitCount(UrlEntity urlEntity) {
         urlEntity.increaseVisitCount();
     }

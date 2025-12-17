@@ -1,6 +1,7 @@
 package com.example.urlshortener.controller;
 
 import com.example.urlshortener.common.ApiResponse;
+import com.example.urlshortener.dto.UrlResponseDto;
 import com.example.urlshortener.service.UrlService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,8 @@ public class UrlController {
     private final UrlService urlService;
 
     // API 1: 단축 URL 생성
-    // 예시: POST /api/shorten?url=https://www.google.com
-    @PostMapping("/shorten")
+    // 예시: POST /api/urls?url=https://www.google.com
+    @PostMapping("/urls")
     public ResponseEntity<ApiResponse<String>> shorten(@RequestParam @NotBlank @URL String url){
 
         String shortId = urlService.shortenUrl(url);
@@ -49,4 +50,12 @@ public class UrlController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
+    // API 3: 정보 조회
+    @GetMapping("/urls/{shortId}")
+    public ResponseEntity<ApiResponse<UrlResponseDto>> getUrlInfo(@PathVariable String shortId) {
+
+        UrlResponseDto urlResponseDto = UrlResponseDto.from(urlService.findUrlByShortId(shortId));
+
+        return ResponseEntity.ok(ApiResponse.success(urlResponseDto));
+    }
 }
