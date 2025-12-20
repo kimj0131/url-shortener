@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(name = "urls", indexes ={ @Index(name = "idx_short_id", columnList = "shortId") })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UrlEntity {
 

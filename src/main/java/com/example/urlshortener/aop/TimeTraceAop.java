@@ -19,7 +19,7 @@ public class TimeTraceAop {
         } finally {
             long finish = System.currentTimeMillis();
             long timeMs = finish - start;
-            log.info("END: {} {}ms", joinPoint.toString(), timeMs);
+            log.info("[AOP] {} 실행시간: {}ms", joinPoint.toString(), timeMs);
         }
 
     }

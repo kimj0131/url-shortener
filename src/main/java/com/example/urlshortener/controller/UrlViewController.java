@@ -35,10 +35,4 @@ public class UrlViewController {
         return "index";
     }
 
-    @GetMapping("/{shortUrl}")
-    public String redirect(@PathVariable String shortId) {
-        String originalUrl = urlService.getOriginalUrl(shortId);
-        return "redirect:" + originalUrl;
-    }
-
 }

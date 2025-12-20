@@ -33,24 +33,7 @@ public class UrlController {
         return ResponseEntity.ok(ApiResponse.success(shortId));
     }
 
-    // API 2: 리다이렉트
-    // 예시: GET / abc12345 -> 구글로 이동
-    @GetMapping("/{shortId}")
-    public ResponseEntity<Void> redirect(@PathVariable String shortId){
-        String originalUrl = urlService.getOriginalUrl(shortId);
-
-        if (originalUrl == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        // 302 Found 상태코드와 Location 헤더를 사용하여 리다이렉트 시킴
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(originalUrl));
-
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
-    }
-
-    // API 3: 정보 조회
+    // API 2: 정보 조회
     @GetMapping("/urls/{shortId}")
     public ResponseEntity<ApiResponse<UrlResponseDto>> getUrlInfo(@PathVariable String shortId) {
 
@@ -58,4 +41,5 @@ public class UrlController {
 
         return ResponseEntity.ok(ApiResponse.success(urlResponseDto));
     }
+
 }

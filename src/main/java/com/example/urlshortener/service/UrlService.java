@@ -4,6 +4,7 @@ import com.example.urlshortener.entity.UrlEntity;
 import com.example.urlshortener.exception.UrlNotFoundException;
 import com.example.urlshortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +32,12 @@ public class UrlService {
         return shortId;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
+    @Cacheable(value = "urls", key = "#shortId")
     public String getOriginalUrl(String shortId) {
         UrlEntity urlEntity = urlRepository.findByShortId(shortId)
                 .orElseThrow(() -> new UrlNotFoundException("존재하지 않는 URL입니다."));
 
-        increaseVisitCount(urlEntity);
         return urlEntity.getOriginalUrl();
     }
 
@@ -46,7 +47,10 @@ public class UrlService {
                 .orElseThrow(() -> new UrlNotFoundException("존재하지 않는 URL입니다."));
     }
 
-    private void increaseVisitCount(UrlEntity urlEntity) {
+    @Transactional
+    public void increaseVisitCount(String shortId) {
+        UrlEntity urlEntity = urlRepository.findByShortId(shortId)
+                .orElseThrow(() -> new UrlNotFoundException("존재하지 않는 URL입니다."));
         urlEntity.increaseVisitCount();
     }
 }
