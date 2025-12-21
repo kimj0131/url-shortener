@@ -49,8 +49,6 @@ public class UrlService {
 
     @Transactional
     public void increaseVisitCount(String shortId) {
-        UrlEntity urlEntity = urlRepository.findByShortId(shortId)
-                .orElseThrow(() -> new UrlNotFoundException("존재하지 않는 URL입니다."));
-        urlEntity.increaseVisitCount();
+        urlRepository.increaseVisitCount(shortId);
     }
 }
