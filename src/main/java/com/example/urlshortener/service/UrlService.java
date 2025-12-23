@@ -5,6 +5,7 @@ import com.example.urlshortener.exception.UrlNotFoundException;
 import com.example.urlshortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,8 @@ import java.util.UUID;
 public class UrlService {
 
     private final UrlRepository urlRepository;
+
+    private final StringRedisTemplate redisTemplate;
 
     @Transactional
     public String shortenUrl(String originalUrl) {
@@ -47,8 +50,8 @@ public class UrlService {
                 .orElseThrow(() -> new UrlNotFoundException("존재하지 않는 URL입니다."));
     }
 
-    @Transactional
     public void increaseVisitCount(String shortId) {
-        urlRepository.increaseVisitCount(shortId);
+        String key = "visitCount:" + shortId;
+        redisTemplate.opsForValue().increment(key);
     }
 }

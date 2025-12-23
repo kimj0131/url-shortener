@@ -13,6 +13,6 @@ public interface UrlRepository extends JpaRepository<UrlEntity, Long> {
     Optional<UrlEntity> findByShortId(String shortId);
 
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE UrlEntity u SET u.visitCount = u.visitCount + 1 WHERE u.shortId = :shortId")
-    void increaseVisitCount(@Param("shortId") String shortId);
+    @Query("UPDATE UrlEntity u SET u.visitCount = u.visitCount + :count WHERE u.shortId = :shortId")
+    void increaseVisitCount(@Param("shortId") String shortId, @Param("count") Long count);
 }
