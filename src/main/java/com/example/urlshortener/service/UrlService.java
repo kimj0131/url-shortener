@@ -1,14 +1,17 @@
 package com.example.urlshortener.service;
 
 import com.example.urlshortener.entity.UrlEntity;
+import com.example.urlshortener.entity.VisitHistoryEntity;
 import com.example.urlshortener.exception.UrlNotFoundException;
 import com.example.urlshortener.repository.UrlRepository;
+import com.example.urlshortener.repository.VisitHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -16,7 +19,7 @@ import java.util.UUID;
 public class UrlService {
 
     private final UrlRepository urlRepository;
-
+    private final VisitHistoryRepository visitHistoryRepository;
     private final StringRedisTemplate redisTemplate;
 
     @Transactional
@@ -38,10 +41,18 @@ public class UrlService {
     @Transactional(readOnly = true)
     @Cacheable(value = "urls", key = "#shortId")
     public String getOriginalUrl(String shortId) {
-        UrlEntity urlEntity = urlRepository.findByShortId(shortId)
-                .orElseThrow(() -> new UrlNotFoundException("존재하지 않는 URL입니다."));
+        UrlEntity urlEntity = findUrlByShortId(shortId);
 
         return urlEntity.getOriginalUrl();
+    }
+
+    @Transactional
+    public void saveVisitHistory(String shortId, String clientId, String userAgent){
+        UrlEntity urlEntity = findUrlByShortId(shortId);
+
+        VisitHistoryEntity visitHistoryEntity = new VisitHistoryEntity(urlEntity, clientId, userAgent);
+
+        visitHistoryRepository.save(visitHistoryEntity);
     }
 
     @Transactional(readOnly = true)
