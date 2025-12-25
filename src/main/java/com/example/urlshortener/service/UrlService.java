@@ -6,14 +6,17 @@ import com.example.urlshortener.exception.UrlNotFoundException;
 import com.example.urlshortener.repository.UrlRepository;
 import com.example.urlshortener.repository.VisitHistoryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -46,8 +49,11 @@ public class UrlService {
         return urlEntity.getOriginalUrl();
     }
 
+    @Async
     @Transactional
-    public void saveVisitHistory(String shortId, String clientId, String userAgent){
+    public void saveVisitHistory(String shortId, String clientId, String userAgent) {
+        log.info("current Thread: {}", Thread.currentThread().getName());
+
         UrlEntity urlEntity = findUrlByShortId(shortId);
 
         VisitHistoryEntity visitHistoryEntity = new VisitHistoryEntity(urlEntity, clientId, userAgent);
