@@ -1,5 +1,6 @@
 package com.example.urlshortener.scheduler;
 
+import com.example.urlshortener.annotation.DistributedLock;
 import com.example.urlshortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ public class VisitCountScheduler {
     private final UrlRepository urlRepository;
 
     @Scheduled(fixedRate = 60000)
-    @Transactional
+    @DistributedLock(key = "VisitCountScheduler", waitTime = 0, leaseTime = 59)
     public void syncVisitCount(){
         // Redis에서 "visitCount:" 키로 시작하는 모든 키 가져오기
         Set<String> keys = redisTemplate.keys("visitCount:*");
