@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  # 1. Redis 서비스
+  redis:
+    image: redis:latest
+    container_name: url-shortener-redis
+    ports:
+      - "6379:6379"
+
+
+  # 2. Spring Boot 애플리케이션 서비스
+  app:
+    build: . # 현재 폴더(.)에 있는 Dockerfile로 빌드
+    container_name: url-shortener-app
+    ports:
+      - "8080:8080"
+    environment:
+      # ** 도커 내부에서는 'localhost' 대신 서비스 이름('redis')을 사용 해야함.
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      - redis # Redis가 먼저 켜져야 앱이 커짐
