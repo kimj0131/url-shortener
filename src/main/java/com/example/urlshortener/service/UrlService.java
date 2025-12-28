@@ -36,6 +36,11 @@ public class UrlService {
             originalUrl = "https://" + originalUrl;
         }
 
+        Optional<UrlEntity> fountUrl = urlRepository.findByOriginalUrl(originalUrl);
+        if (fountUrl.isPresent()) {
+            return fountUrl.get().getShortId();
+        }
+
         UrlEntity urlEntity = new UrlEntity(shortId, originalUrl);
         urlRepository.save(urlEntity);
         return shortId;
