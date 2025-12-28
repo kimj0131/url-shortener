@@ -42,3 +42,4 @@ out/
 *.yaml
 
 !docker-compose.yml
+!ci.yml
