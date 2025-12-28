@@ -34,6 +34,18 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # (4) 빌드하고 테스트 돌리기 (핵심!)
+      # (3.5) application.properties 생성
+      - name: Create application.properties
+        run: |
+          mkdir -p src/main/resources
+          echo "spring.datasource.url=jdbc:h2:mem:testdb" >> src/main/resources/application.properties
+          echo "spring.datasource.driverClassName=org.h2.Driver" >> src/main/resources/application.properties
+          echo "spring.datasource.username=sa" >> src/main/resources/application.properties
+          echo "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect" >> src/main/resources/application.properties
+          echo "spring.data.redis.host=localhost" >> src/main/resources/application.properties
+          echo "spring.data.redis.port=6379" >> src/main/resources/application.properties
+
+      # (4) 빌드하고 테스트
       - name: Build with Gradle
         run: ./gradlew clean build
+
