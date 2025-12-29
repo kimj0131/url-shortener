@@ -1,25 +1,5 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="ko" xmlns:th="http://www.thymeleaf.org" >-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>URL Shortener</title>-->
-<!--</head>-->
-<!--<body>-->
-<!--    <form th:action="@{/shorten}" method="post">-->
-<!--        <input type="text" name="originalUrl" placeholder="URL 입력">-->
-<!--        <button type="submit">단축하기</button>-->
-<!--    </form>-->
-
-<!--    <div th:if="${shortUrl != null}" class="result">-->
-<!--        <h3>결과:</h3>-->
-
-<!--        <a th:href="${shortUrl}" target="_blank" th:text="${shortUrl}"></a>-->
-<!--    </div>-->
-
-<!--</body>-->
-<!--</html>-->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -112,5 +92,8 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:if="${rateLimitError}">
+    alert("⚠️ 요청이 너무 많습니다.\n잠시 후 다시 시도해주세요.");
+</script>
 </body>
 </html>

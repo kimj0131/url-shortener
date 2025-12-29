@@ -45,3 +45,5 @@ out/
 !ci.yml
 
 TODO.md
+INTERVIEW_PREP.md
+DOCS_RATE_LIMITER.md
