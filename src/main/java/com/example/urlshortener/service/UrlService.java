@@ -5,6 +5,7 @@ import com.example.urlshortener.entity.VisitHistoryEntity;
 import com.example.urlshortener.exception.UrlNotFoundException;
 import com.example.urlshortener.repository.UrlRepository;
 import com.example.urlshortener.repository.VisitHistoryRepository;
+import com.example.urlshortener.util.Base62Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,10 +28,6 @@ public class UrlService {
 
     @Transactional
     public String shortenUrl(String originalUrl) {
-        String shortId;
-        do {
-            shortId = UUID.randomUUID().toString().substring(0, 8);
-        } while (urlRepository.findByShortId(shortId).isPresent());
 
         if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
             originalUrl = "https://" + originalUrl;
@@ -41,8 +38,13 @@ public class UrlService {
             return fountUrl.get().getShortId();
         }
 
-        UrlEntity urlEntity = new UrlEntity(shortId, originalUrl);
+        UrlEntity urlEntity = new UrlEntity("", originalUrl);
         urlRepository.save(urlEntity);
+
+        String shortId = Base62Util.encode(urlEntity.getUrlId());
+
+        urlEntity.updateShortId(shortId);
+
         return shortId;
     }
 

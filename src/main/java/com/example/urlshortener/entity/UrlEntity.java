@@ -38,6 +38,10 @@ public class UrlEntity {
         this.originalUrl = originalUrl;
     }
 
+    public void updateShortId(String shortId){
+        this.shortId = shortId;
+    }
+
     public void increaseVisitCount() {
         this.visitCount++;
     }
