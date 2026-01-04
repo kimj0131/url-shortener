@@ -1,5 +1,6 @@
 package com.example.urlshortener.service;
 
+import com.example.urlshortener.dto.UrlCacheDto;
 import com.example.urlshortener.entity.UrlEntity;
 import com.example.urlshortener.entity.VisitHistoryEntity;
 import com.example.urlshortener.exception.UrlNotFoundException;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -33,9 +33,9 @@ public class UrlService {
             originalUrl = "https://" + originalUrl;
         }
 
-        Optional<UrlEntity> fountUrl = urlRepository.findByOriginalUrl(originalUrl);
-        if (fountUrl.isPresent()) {
-            return fountUrl.get().getShortId();
+        Optional<UrlEntity> foundUrl = urlRepository.findByOriginalUrl(originalUrl);
+        if (foundUrl.isPresent()) {
+            return foundUrl.get().getShortId();
         }
 
         UrlEntity urlEntity = new UrlEntity("", originalUrl);
@@ -50,18 +50,18 @@ public class UrlService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "urls", key = "#shortId")
-    public String getOriginalUrl(String shortId) {
+    public UrlCacheDto getUrlCache(String shortId) {
         UrlEntity urlEntity = findUrlByShortId(shortId);
 
-        return urlEntity.getOriginalUrl();
+        return new UrlCacheDto(urlEntity.getOriginalUrl(), urlEntity.getUrlId());
     }
 
     @Async
     @Transactional
-    public void saveVisitHistory(String shortId, String clientId, String userAgent) {
-        log.info("current Thread: {}", Thread.currentThread().getName());
+    public void saveVisitHistory(UrlCacheDto dto, String clientId, String userAgent) {
+//        log.info("current Thread: {}", Thread.currentThread().getName());
 
-        UrlEntity urlEntity = findUrlByShortId(shortId);
+        UrlEntity urlEntity = urlRepository.getReferenceById(dto.getUrlId());
 
         VisitHistoryEntity visitHistoryEntity = new VisitHistoryEntity(urlEntity, clientId, userAgent);
 

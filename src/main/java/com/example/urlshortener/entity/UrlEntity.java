@@ -41,8 +41,4 @@ public class UrlEntity {
     public void updateShortId(String shortId){
         this.shortId = shortId;
     }
-
-    public void increaseVisitCount() {
-        this.visitCount++;
-    }
 }
