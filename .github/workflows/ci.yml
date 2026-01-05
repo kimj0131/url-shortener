@@ -56,27 +56,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # (3.5) application.properties 생성
-      - name: Create application.properties
-        run: |
-          mkdir -p src/main/resources
-          echo "spring.datasource.url=jdbc:h2:mem:testdb" >> src/main/resources/application.properties
-          echo "spring.datasource.driverClassName=org.h2.Driver" >> src/main/resources/application.properties
-          echo "spring.datasource.username=sa" >> src/main/resources/application.properties
-          echo "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect" >> src/main/resources/application.properties
-          echo "spring.data.redis.host=localhost" >> src/main/resources/application.properties
-          echo "spring.data.redis.port=6379" >> src/main/resources/application.properties
-          
-          # [추가] Kafka 설정
-          echo "spring.kafka.bootstrap-servers=localhost:9092" >> src/main/resources/application.properties
-          echo "spring.kafka.consumer.group-id=test-group" >> src/main/resources/application.properties
-          echo "spring.kafka.consumer.auto-offset-reset=earliest" >> src/main/resources/application.properties
-          echo "spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer" >> src/main/resources/application.properties
-          echo "spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer" >> src/main/resources/application.properties
-          echo "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer" >> src/main/resources/application.properties
-          echo "spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer" >> src/main/resources/application.properties
-          echo "spring.kafka.consumer.properties.spring.json.trusted.packages=*" >> src/main/resources/application.properties
-
       # (4) 빌드하고 테스트
       - name: Build with Gradle
         run: ./gradlew clean build

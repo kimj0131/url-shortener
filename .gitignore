@@ -36,13 +36,13 @@ out/
 ### VS Code ###
 .vscode/
 
-*.properties
 !gradle/wrapper/gradle-wrapper.properties
 *.yml
 *.yaml
 
 !docker-compose.yml
 !ci.yml
+!prometheus.yml
 
 TODO.md
 INTERVIEW_PREP.md
