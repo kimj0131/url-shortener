@@ -34,7 +34,31 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  # 3. Spring Boot 애플리케이션 서비스
+  # 4. Prometheus (모니터링 데이터 수집)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: urlshortener-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9091:9090"
+    depends_on:
+      - app
+
+  # 5. Grafana (데이터 시각화)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: urlshortener-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      # [개발용] 로그인 없이 관리자 권한으로 접속 허용
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    depends_on:
+      - prometheus
+
+  # Spring Boot 애플리케이션 서비스
   app:
     build: . # 현재 폴더(.)에 있는 Dockerfile로 빌드
     container_name: url-shortener-app
@@ -44,5 +68,8 @@ services:
       # ** 도커 내부에서는 'localhost' 대신 서비스 이름('redis')을 사용 해야함.
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
+
+      # [추가] Kafka 설정 덮어쓰기 (Docker 내부 통신용)
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     depends_on:
       - redis # Redis가 먼저 켜져야 앱이 커짐
