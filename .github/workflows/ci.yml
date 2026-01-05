@@ -12,12 +12,34 @@ jobs:
   build:
     runs-on: ubuntu-latest # 리눅스 컴퓨터 한 대 빌려줘!
 
-    # 3. Redis (Service Container)
+    # 3. Services (Redis + Kafka + Zookeeper)
     services:
       redis:
         image: redis:latest
         ports:
           - 6379:6379
+
+      # [추가] Zookeeper
+      zookeeper:
+        image: confluentinc/cp-zookeeper:7.5.0
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+        ports:
+          - 2181:2181
+
+      # [추가] Kafka
+      kafka:
+        image: confluentinc/cp-kafka:7.5.0
+        env:
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        ports:
+          - 9092:9092
 
     steps:
       # (1) 코드 가져오기
@@ -44,6 +66,16 @@ jobs:
           echo "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect" >> src/main/resources/application.properties
           echo "spring.data.redis.host=localhost" >> src/main/resources/application.properties
           echo "spring.data.redis.port=6379" >> src/main/resources/application.properties
+          
+          # [추가] Kafka 설정
+          echo "spring.kafka.bootstrap-servers=localhost:9092" >> src/main/resources/application.properties
+          echo "spring.kafka.consumer.group-id=test-group" >> src/main/resources/application.properties
+          echo "spring.kafka.consumer.auto-offset-reset=earliest" >> src/main/resources/application.properties
+          echo "spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer" >> src/main/resources/application.properties
+          echo "spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer" >> src/main/resources/application.properties
+          echo "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer" >> src/main/resources/application.properties
+          echo "spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer" >> src/main/resources/application.properties
+          echo "spring.kafka.consumer.properties.spring.json.trusted.packages=*" >> src/main/resources/application.properties
 
       # (4) 빌드하고 테스트
       - name: Build with Gradle

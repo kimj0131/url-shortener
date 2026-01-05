@@ -31,6 +31,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.redisson:redisson-spring-boot-starter:3.31.0'
+    implementation 'org.springframework.kafka:spring-kafka'
+
     // 유효성 검사
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.bucket4j:bucket4j_jdk17-core:8.14.0'

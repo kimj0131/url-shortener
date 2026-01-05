@@ -1,6 +1,8 @@
 package com.example.urlshortener.controller;
 
 import com.example.urlshortener.dto.UrlCacheDto;
+import com.example.urlshortener.dto.VisitLogDto;
+import com.example.urlshortener.kafka.KafkaProducerService;
 import com.example.urlshortener.service.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.net.URI;
 public class RedirectController {
 
     private final UrlService urlService;
+    private final KafkaProducerService kafkaProducerService;
 
     // 리다이렉트
     // 예시: GET / abc12345 -> 구글로 이동
@@ -29,19 +32,23 @@ public class RedirectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        String originalUrl = dto.getOriginalUrl();
-
-        String userAddr = request.getRemoteAddr();
-        String userAgent = request.getHeader("User-Agent");
-
-        urlService.saveVisitHistory(dto, userAddr, userAgent);
-        urlService.increaseVisitCount(shortId);
+        handleVisitLog(shortId, dto, request);
 
         // 302 Found 상태코드와 Location 헤더를 사용하여 리다이렉트 시킴
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(originalUrl));
+        headers.setLocation(URI.create(dto.getOriginalUrl()));
 
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+
+    private void handleVisitLog(String shortId, UrlCacheDto dto, HttpServletRequest request){
+        String userAddr = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+
+        VisitLogDto visitLogDto = VisitLogDto.createDto(dto, userAddr, userAgent);
+        kafkaProducerService.sendVisitLog(visitLogDto);
+
+        urlService.increaseVisitCount(shortId);
     }
 
 }
