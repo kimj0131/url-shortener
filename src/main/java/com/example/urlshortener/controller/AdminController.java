@@ -21,6 +21,11 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    @GetMapping("/login")
+    public String login(){
+        return "admin/login";
+    }
+
     @GetMapping(value={"", "/"})
     public String urlList(
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
