@@ -11,6 +11,7 @@ Java Spring Boot 기반의 URL 단축 서비스 프로젝트입니다.
 - Java 17
 - Spring Boot 4.x
 - Spring Data JPA
+- Spring Security (Authentication/Authorization)
 - Database: MySQL (로컬 개발 환경에서는 H2 사용)
 - Message Queue: Apache Kafka
 - Build Tool: Gradle
@@ -56,8 +57,20 @@ Java Spring Boot 기반의 URL 단축 서비스 프로젝트입니다.
 - [x] Kafka 도입: 접속 로그 처리를 위한 메시지 큐 시스템 구축.
 - [x] 서버 모니터링: Prometheus & Grafana를 활용한 시스템 상태 시각화.
 
-## ⚙️ Performance Report
+### 단계 6: 보안 및 운영 고도화 (Planned)
+- [ ] **보안 강화 (Spring Security):** 관리자 페이지 접근 제어 및 로그인 구현.
+- [ ] **로그 시스템 개선:** Logback & Loki 도입으로 중앙 집중형 로그 검색 환경 구축.
 
+### 단계 7: 테스트 및 문서화 (Planned)
+- [ ] **테스트 커버리지 확대:** TestContainers 활용 통합 테스트 환경 구축.
+- [ ] **API 문서화:** SpringDoc(Swagger) 도입.
+
+### 단계 8: 대용량 데이터 처리 (Planned)
+- [ ] **배치 처리 (Spring Batch):** 접속 로그 집계 및 통계 테이블 이관.
+
+***
+
+## ⚙️ Performance Report
 ### 1차 테스트 (Baseline)
 *   **테스트 환경:** 로컬 개발 환경 (Apache Bench(ab) 사용)
 *   **조건:** 요청 1,000건 (동시 접속 10)
@@ -78,7 +91,6 @@ Java Spring Boot 기반의 URL 단축 서비스 프로젝트입니다.
     불필요한 DB 조회를 제거함으로써 처리량을 비약적으로 상승시켰습니다.
     이제 리다이렉트 로직은 DB 부하 없이 Redis와 비동기 INSERT만으로 동작합니다.
 > **Note:** JVM Warm-up이 완료된 상태에서 재측정 시 최대 **726 TPS (약 108% 향상)** 까지 성능이 향상됨을 확인했습니다.
-
 ***
 
 ## 서버 모니터링 및 운영 안정성
@@ -195,3 +207,13 @@ Java Spring Boot 기반의 URL 단축 서비스 프로젝트입니다.
   1. 관리자 페이지는 트래픽이 매우적어 DB 부하가 적을 것으로 예상.
   2. 관리자는 데이터의 최신 상태를 확인해야 함.
   3. 페이징/검색 조건의 다양성으로 인해 캐시 적중률이 낮을것으로 판단됨.
+
+### - 보안 강화 (Spring Security)
+관리자 페이지에 대한 무단 접근을 방지하고 데이터 보안을 강화하기 위해 Spring Security를 도입했습니다.
+* **접근 제어 (Authorization):**
+  * `/admin/**` 경로는 `ADMIN` 권한을 가진 사용자만 접근 가능하도록 설정했습니다.
+  * 그 외의 경로(`/`, `/api/**`)는 누구나 접근 가능하도록 허용하여 서비스 이용에 불편이 없도록 했습니다.
+* **인증 (Authentication):**
+  * Form Login 방식을 채택하여 관리자 전용 로그인 페이지를 구현했습니다.
+* **CSRF 보호:**
+  * Spring Security의 기본 CSRF 보호 기능을 활성화하여, 위조된 요청(Cross-Site Request Forgery)으로 인한 데이터 삭제를 방지했습니다.
